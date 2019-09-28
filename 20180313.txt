@@ -1,0 +1,84 @@
+File System Permissions:
+
+#dir names point to inodes
+#inodes contain file metadata and points to the actual file data block
+
+df
+df -i
+ln file1 file2 #hard link (same volume) creates a second filename for same data blocks with same inode number that's independent
+
+#a symbolic link (can be diff volume) creates a dependent (breakable) link
+
+link file properties (rwx) usually begin with "l"
+regular file properties usually begin with "-"
+dir file properties "d"
+
+rwxrwxrwx
+111101000 #7|5|0
+110110110 #6|6|6 (non-executable)
+
+3 additional bits at the peak are inserted inside instead of the left:
+  1. SUID bit #when TRUE any user can execute it as ROOT...dangerous but useful for giving specific capabilities such as debugging, HOWEVER someone or something running anything as ROOT can potentially let it/them
+  2. SGID #when TRUE any group can ""
+  3. Sticky bit #only the owner of a file can delete this file when TRUE
+
+use chmod on file2.doc which is normally rw-rw-rw- (666): 
+----chmod 1666 file2.doc #file permissions become rw-rw-rwT
+----chmod 4666 file2.doc #becomes rwSrw-rw-
+----chmod
+
+
+lsattr file.txt #list file attributes (elevated)
+chattr file.txt	#change...
+chattr + i file.txt #immutable attributes
+chattr + a file.txt #append-only (ex: adding to log files but preventing grooming)
+run man chattr & man lsattr for more info
+----#note these are independent of user/group
+
+timestamps 
+#created (crtime / Birth)
+#modified (mtime) = change file data
+#accessed (atime)
+#changed (ctime) = changed metadata/inode
+stat filename #shows these stats
+#ctime will not update mtime, but mtime will always(?) update ctime
+
+REGULAR EXPRESSIONS:
+
+grep #line-by-line filter
+grep -i #case-insensitive
+grep -i john presidents.csv | wc -l #count of lines with "john"
+grep -i '^J' presidents.csv #lists instances of lines beginning with "J"
+grep -i '63$' presidents.csv #lines ending with "63"
+grep -i '^John.*1963$' presidents.csv #any line starting with John & ending with 1963
+
+#the * Quantifier means "0 or more of the preceding item" as a regular expression but means "anything with the preceding item" as a wildcard
+#the + Quantifier means "1 or more of the preceding item"
+#the {number} Quantifier means "exactly 'number' of matches" (ex: grep -Ei 'n{2}' presidents.csv will give you every line with 'nn')
+#the {min,max} Quantifier means "range" (grep -Ei 'cn{2,4}p' #btwn 2-4 n's preceded by c & followed directly by p) or (whereas 'cn{,4}p' means maximum 4 n's btwn c & p) & (thus 'cn{4,}p' means minimum 4 n's btwn c&p)
+
+grep #core grep
+grep -E #extended grep (ex: grep -Ei)***************Always Use************************
+grep -P #pearl grep
+
+grep -Ei 'n+' presidents.csv #Extended mode, any case, any line with 1 or more 'n'
+grep -Ei 'John.*Texas' presidents.csv #any combo of John & Texas
+grep -Ei '^(John|William)' presidents.csv #any line with john OR william at front
+
+#the [] matches any of the characters within
+#you can narrow it to btwn grep -E 'b[abcd]d'
+#tweak results with grep -E 'b[abcd]+d' 
+#or grep -E 'b[abcd]{3}e'
+#or grep -E 'b[abcd]{1,3}e' (which = grep -E 'b[a-d]{1,3}e')
+#or grep -E 'b[^f-z]d'
+
+#the () 
+
+grep -V #inverts to exclude the named items (grep -V John pres.csv | wc -l #would tell you there are 39 lines/presidents with no John)
+
+grep -P #Pearl mode (required for \d \s \w)
+grep -c #counts number of matching lines
+grep -o #only outputs exact instances (word or string)
+grep -m #max count for return results
+grep -n #includes line numbers
+grep -wc #word count -l=line count, -c=character count, but only '-o | grep -wc -l' will separate multi-result lines into their own lines for counting

@@ -1,0 +1,63 @@
+set | cmd #local settings list
+env | more #global settings list
+export #sets global but will affect local too
+
+${var:1:555} #starting at 2nd char, 555 = character count (output = 554 chars)
+${var:-1:2}
+${var:-10:3}
+
+echo $BASH
+echo $BASHPID
+ps
+echo $UID
+grep Growden /etc/passwd
+
+su -
+sudo su
+
+column -ts ':' /etc/passwd | more
+cut -d #d for delimiter
+cat /etc/passwd | cut -d : -f 3 | head -3 #UID field only
+cat /etc/passwd | cut -d : -f 4 | head -3 #GID field only
+cat /etc/passwd | cut -d : -f 3,4 | head -3 #UID & GID fields ***NO SET ORDER***
+vi /etc/passwd
+expand /etc/passwd
+
+translate (tr) ":" "Z" #replaces all colons with Z
+tr -d \: #deletes colons
+tr -d \\n #deletes line separators (whitespace)
+tr -d \: | head -3 #deletes colons and omits 1st 3 lines
+********may be easier to use SED************
+
+IFS #Internal Field Separator - changes the way BASH interprets files
+
+MD5 vs SHA1 vs SHA256
+
+MD5 (32char, 128bits) is least safe of these
+SHA1 (160bit)
+SHA256 (256)
+**Hash collisions = the (rare) chance of duplicates
+
+BELOW IS A SCRIPT TO READ FROM FILE & OUTPUT IN ORGANIZED FASHION
+linecount=0 #creating a var called linecount and initializing it to 0
+while read -r var #while reading line by line in file $1
+do
+    linecount=$(expr $linecount + 1) #add 1 to linecount
+    echo "$linecount calue is $var" #print out current linecount starting at 1
+done < "$1"
+#result is line number + value is + line string (22 value is blahblahblah)
+
+BELOW IS A SCRIPT TO READ TO
+IFS=:
+linecount=0 #creating a var called linecount and initializing it to 0
+while read -r f1 f2 f3 f4 f5 f6 f7 #seven columns
+do
+    ((linecount++)) 
+    echo Line $linecount: "Username: $f1, Shell: $f7: Home Dir: $f6" #prints desired fields in desired fashion
+done < /etc/passwd #result is line number + Usersname (or Shell or Home Dir) + line string (22 Username: blahblahblah)
+
+**********remember to chmod +x scriptfilename*************
+
+. #current Dir
+.. #parent dir
+./ #recursive to all within current dir

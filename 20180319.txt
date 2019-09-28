@@ -1,0 +1,34 @@
+LINUX PROCESSES
+
+PID vs PPID
+
+/sbin/init #PID 1 & PPID 2
+
+Everything in Userland is segregated by its own memory allocations, each bidding for action by the kernel in system calls
+
+Linux is a monolithic kernel
+
+ps -elf | grep init
+ps -elf | grep kthread
+
+ps -aux
+
+Not all orphans are daemons, but all daemons are orphans
+
+STDIN, STDOUT, STDERR
+
+daemons route to dev/null by default
+--typically noted by a "d" at the end of the filename (not a ".d" which calls a dir)
+--a lot of them run in the background
+--orphaned programs/services running in the background 
+
+**Fork bomb
+
+cron -e
+
+mknod mypipe p
+mkfifo
+
+**fstab vs sbin/init
+
+use systemctl for everything in systemd

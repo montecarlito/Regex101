@@ -1,0 +1,88 @@
+Positional Variables
+$1 #IP/DNS address
+$2 #Port
+
+MBR Boot Processes
+1.BIOS. BIOS stands for Basic Input/Output System. ... 
+2.MBR. MBR stands for Master Boot Record. BIOS *must* use MBR... 
+3.GRUB. GRUB stands for Grand Unified Bootloader. Stages 1&2
+4.Kernel. Mounts the root file system as specified in the “root=” in grub.conf. #see 	vmlinuz (actual kernel file) 
+5.Init. ... 
+6.Runlevel programs
+^^^^^^Big Mike Got Killed In Russia
+
+
+Sys V Init
+--Old, less complicated
+--GRUB (Grand Unified Bootloader) finds linux; gives you that choice of boot @startup
+--Loads kernel into memory while creating file VMlinux
+--LILO (first Linux Loader; outdated) doesn't work with EUFI
+**GRUB is controlled by config file (distro-unique) ex: grub.com or menu.list
+--GRUB versions: 1(old) & 2 #look in /menu.lst, /etc/default/grub, or grub.conf
+--GRUB Stage 1 #MBR 
+--GRUB Stage 2 #VBR
+--kernel #PID 0
+
+	1) analyzes cpu capability and uses RAM to init drivers; 
+		--THEN it will look to GRUB to establish Root Dir on disk
+
+	2) /sbin/init #PID 1
+		--look at config file /etc/inittab (spawns tty & pts)
+		**"init defaults" #points to sys directories (/etc/init.d) to run
+		--"run levels"
+		**/etc/init.d/rc# files #kill (K) scripts 1st then start (S) scripts
+		**"daemons"
+
+	3) kthreadd #PID 2
+
+SysVInit (System V[5])
+    ? /sbin/init
+        ? reads /etc/inittab to determine runlevels (looks for phrase "initdefault")
+            ? continue initdefault
+                ? jumps to runlevel # in init default
+                    ? executes script in directory for that runlevel
+
+
+SysDInit
+--started as a svc mgr circa 2010; now also provides logging, audting etc.
+--
+
+	1) /lib/systemd/systemd - linked by /sbin/init
+		**targets (ex: graphical.target, multiuser.target, singleuser.target)
+		**etc/systemd/default.target #doesn't have all of the run scripts; creates **dependency tree of targets>>threads
+		**"daemons(services) & run levels" in systemd are targets & 3xservices/units
+		**systemctl get -default #gets default target
+		**systemctl isolate #changing targets
+
+
+**for awhile, Ubuntu used "Upstart"
+
+
+BIOS
+--depends on MBR (512kb) and VBR (bootable partition) remaining constant
+--starts in Real Mode
+
+
+UEFI
+**Stores bootloader program in a system partition /boot/EFI ($ find / -type d -name efi)
+	**OR stores it in firmware (ie ROM of a motherboard chip)
+**will only load UEFIs digitally signed by Microsoft (.efi file mz format)
+**Unreal Mode (switches back and forth from Real to Protected)
+
+
+
+Intel chips can 
+--Ix86 #Real Mode - addresses 1MB of memory at a time for DOS compatibility
+--32-bit #Protected Mode
+--64-bit #
+
+
+Disk Formatting
+--GPT
+	-gdisk
+	-UEFI standard (EPS)
+	-up to 128 partitions
+
+--MBR
+	-fdisk
+	-up to 4 partitions, only 1 bootable
